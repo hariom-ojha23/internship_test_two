@@ -36,11 +36,13 @@ const insertUser = asyncHandler(async (req, res) => {
   }
 
   const userExist = await db.User.findOne({
-    user_email: req.body.user_email,
+    where: { user_email: req.body.user_email },
   }).catch((error) => console.log(`Error: ${error.message}`))
 
   if (userExist) {
-    return res.status(400).json({ Error: 'This user already exist' })
+    return res
+      .status(400)
+      .json({ Error: 'A user with this email already registered' })
   }
 
   await db.User.create(user_details)
@@ -61,9 +63,11 @@ const updateUser = asyncHandler(async (req, res) => {
     user_password: req.body.user_password,
     user_image: req.body.user_image,
   }
+
   const emailExist = await db.User.findOne({
-    user_email: req.body.user_email,
+    where: { user_email: req.body.user_email },
   }).catch((error) => console.log(`Error: ${error.message}`))
+
   if (emailExist) {
     return res.status(400).json({ Error: 'This email is already registered' })
   }
