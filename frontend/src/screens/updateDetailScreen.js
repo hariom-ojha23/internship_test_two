@@ -1,17 +1,67 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useSelector } from 'react-redux'
 import { Container, Form, Card, Row, Button } from 'react-bootstrap'
+import Message from '../components/Message'
+import axios from 'axios'
 
-const UpdateDetailScreen = () => {
+const UpdateDetailScreen = ({ match, history }) => {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
+  const [totalOrder, setTotalOrder] = useState('')
   const [image, setImage] = useState('')
+  const [message, setMessage] = useState(null)
+  const [error, setError] = useState(null)
 
-  const submitHandler = () => {}
+  const id = match.params.id
+
+  const userLogin = useSelector((state) => state.userLogin)
+  const { userInfo } = userLogin
+
+  useEffect(() => {
+    const goToUsers = () => {
+      history.push('/')
+    }
+
+    if (message) {
+      setTimeout(goToUsers, 500)
+    }
+  })
+
+  const updateDetail = async () => {
+    const data = {
+      user_id: id,
+      user_name: name,
+      user_email: email,
+      user_image: image,
+      total_orders: totalOrder,
+    }
+
+    const config = {
+      headers: {
+        authorization: `Bearer ${userInfo.token}`,
+      },
+    }
+
+    await axios
+      .put('/update', data, config)
+      .then((res) => {
+        setMessage(res.data)
+      })
+      .catch((error) => {
+        console.log(`Error: ${error}`)
+        setError(error.message)
+      })
+  }
+
+  const submitHandler = (e) => {
+    e.preventDefault()
+    updateDetail()
+  }
 
   return (
     <Container>
+      {message && <Message variant='success'>{message}</Message>}
+      {error && <Message variant='danger'>{error}</Message>}
       <Row className='justify-content-center'>
         <Card className='my-5 px-5 py-3 card'>
           <h1 className='py-4'>update user details</h1>
@@ -37,23 +87,13 @@ const UpdateDetailScreen = () => {
               />
             </Form.Group>
 
-            <Form.Group className='mb-3' controlId='password'>
-              <Form.Label>Password</Form.Label>
+            <Form.Group className='mb-3' controlId='totalOrder'>
+              <Form.Label>Total Order</Form.Label>
               <Form.Control
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                type='password'
-                placeholder='Password'
-              />
-            </Form.Group>
-
-            <Form.Group className='mb-3' controlId='confirmPassword'>
-              <Form.Label>Confirm Password</Form.Label>
-              <Form.Control
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                type='password'
-                placeholder='Confirm Password'
+                value={totalOrder}
+                onChange={(e) => setTotalOrder(parseInt(e.target.value))}
+                type='text'
+                placeholder='Enter total Order'
               />
             </Form.Group>
 

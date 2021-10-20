@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { Card, Container, Row, Col, Image, Button } from 'react-bootstrap'
 import axios from 'axios'
 import { LinkContainer } from 'react-router-bootstrap'
@@ -6,6 +7,9 @@ import { LinkContainer } from 'react-router-bootstrap'
 const UserDetailScreen = ({ match, history }) => {
   const [user, setUser] = useState({})
   const id = match.params.id
+
+  const userLogin = useSelector((state) => state.userLogin)
+  const { userInfo } = userLogin
 
   useEffect(() => {
     const getUser = async () => {
@@ -21,7 +25,23 @@ const UserDetailScreen = ({ match, history }) => {
   const updateDetailBtn = () => {
     history.push(`/login?redirect=update/${user.user_id}`)
   }
-  const deleteUserBtn = () => {}
+  const deleteUserBtn = async () => {
+    if (userInfo) {
+      await axios
+        .delete(`/delete/${id}`)
+        .then(() => {
+          if (userInfo.user_id === id) {
+            localStorage.removeItem('userInfo')
+          }
+          history.push('/')
+        })
+        .catch((err) => {
+          console.log(`Error: ${err.message}`)
+        })
+    } else {
+      history.push('/login')
+    }
+  }
 
   return (
     <Container>
@@ -88,16 +108,20 @@ const UserDetailScreen = ({ match, history }) => {
               Update Details
             </Button>
           </Row>
-          <Row className='justify-content-center'>
-            <Button
-              style={{ width: '250px' }}
-              className='btn my-3'
-              onClick={deleteUserBtn}
-              variant='danger'
-            >
-              Delete User
-            </Button>
-          </Row>
+          {userInfo !== null && userInfo.user_id !== user.user_id ? (
+            <Row className='justify-content-center'>
+              <Button
+                style={{ width: '250px' }}
+                className='btn my-3'
+                onClick={deleteUserBtn}
+                variant='danger'
+              >
+                Delete User
+              </Button>
+            </Row>
+          ) : (
+            <></>
+          )}
         </Card>
       </Row>
     </Container>

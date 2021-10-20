@@ -6,10 +6,12 @@ import LoginScreen from './screens/LoginScreen'
 import RegisterScreen from './screens/RegisterScreen'
 import UpdateDetailScreen from './screens/UpdateDetailScreen'
 import UserDetailScreen from './screens/UserDetailScreen'
+import Header from './components/Header'
 
 const App = () => {
   return (
     <Router>
+      <Header />
       <Route path='/login' component={LoginScreen} />
       <Route path='/register' component={RegisterScreen} />
       <Route exact path='/' component={AllUserDetailScreen} />

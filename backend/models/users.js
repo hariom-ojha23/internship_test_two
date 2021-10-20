@@ -18,12 +18,15 @@ module.exports = (sequelize) => {
     },
     user_image: {
       type: Sequelize.STRING,
+      defaultValue:
+        'https://pluspng.com/img-png/png-user-icon-circled-user-icon-2240.png',
     },
     last_logged_in: {
       type: Sequelize.STRING,
     },
     total_orders: {
       type: Sequelize.INTEGER,
+      defaultValue: 0,
     },
   })
 }

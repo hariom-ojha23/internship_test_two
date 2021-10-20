@@ -1,4 +1,5 @@
 const db = require('../models')
+const { Op } = require('sequelize')
 const asyncHandler = require('express-async-handler')
 const matchPassword = require('../utils/matchPassword')
 const generateToken = require('../utils/generateToken')
@@ -51,8 +52,15 @@ const loginUser = asyncHandler(async (req, res) => {
       { where: { user_id: user.dataValues.user_id } }
     )
 
+    let data = user.dataValues
+
     res.json({
-      user: user.dataValues,
+      user_id: data.user_id,
+      user_name: data.user_name,
+      user_email: data.user_email,
+      user_image: data.user_image,
+      last_logged_in: data.last_logged_in,
+      total_orders: data.total_orders,
       token: generateToken(user.user_id),
     })
   } else {
@@ -93,8 +101,15 @@ const insertUser = asyncHandler(async (req, res) => {
   await db.User.create(user_details)
     .then((user) => {
       res.status(201)
+      let data = user.dataValues
+
       res.json({
-        user: user.dataValues,
+        user_id: data.user_id,
+        user_name: data.user_name,
+        user_email: data.user_email,
+        user_image: data.user_image,
+        last_logged_in: data.last_logged_in,
+        total_orders: data.total_orders,
         token: generateToken(user.user_id),
       })
     })
@@ -106,22 +121,24 @@ const insertUser = asyncHandler(async (req, res) => {
 // @route PUT/update
 const updateUser = asyncHandler(async (req, res) => {
   const user_id = req.body.user_id
-  let new_details = {}
-  await hashPassword(req.body.user_password).then((pass) => {
-    new_details = {
-      user_name: req.body.user_name,
-      user_email: req.body.user_email,
-      user_password: pass,
-      user_image: req.body.user_image,
-    }
-  })
+  const new_details = {
+    user_name: req.body.user_name,
+    user_email: req.body.user_email,
+    total_orders: req.body.total_orders,
+    user_image: req.body.user_image,
+  }
 
   const emailExist = await db.User.findOne({
-    where: { user_email: req.body.user_email },
-  }).catch((error) => console.log(`Error: ${error.message}`))
+    where: {
+      user_email: req.body.user_email,
+      user_id: {
+        [Op.ne]: user_id,
+      },
+    },
+  }).catch((error) => console.log(`Error is here: ${error.message}`))
 
   if (emailExist) {
-    return res.status(400).json({ Error: 'This email is already registered' })
+    return res.status(400).send({ Error: 'This email is already registered' })
   }
 
   await db.User.update(new_details, { where: { user_id } })
@@ -138,7 +155,7 @@ const deleteUser = asyncHandler(async (req, res) => {
   const id = req.params.id
   await db.User.destroy({ where: { user_id: id } })
     .then(() => {
-      res.json('User deleted successfully')
+      res.send('User deleted successfully')
     })
     .catch((error) => console.log(`Error: ${error.message}`))
 })
