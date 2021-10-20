@@ -20,7 +20,7 @@ module.exports = (sequelize) => {
       type: Sequelize.STRING,
     },
     last_logged_in: {
-      type: Sequelize.DATE,
+      type: Sequelize.STRING,
     },
     total_orders: {
       type: Sequelize.INTEGER,

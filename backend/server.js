@@ -6,7 +6,7 @@ const { notFound, errorHandler } = require('./middlewares/errorMiddlewares')
 
 dotenv.config()
 const app = express()
-const port = process.env.PORT
+const port = process.env.PORT || 5000
 
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())

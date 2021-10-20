@@ -1,8 +1,26 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Card, Container, Row, Col, Image, Button } from 'react-bootstrap'
+import axios from 'axios'
+import { LinkContainer } from 'react-router-bootstrap'
 
-const UserDetailScreen = () => {
-  const updateDetailBtn = () => {}
+const UserDetailScreen = ({ match, history }) => {
+  const [user, setUser] = useState({})
+  const id = match.params.id
+
+  useEffect(() => {
+    const getUser = async () => {
+      await axios
+        .get(`/details/${id}`)
+        .then((res) => setUser(res.data))
+        .catch((error) => console.log(error.message))
+    }
+
+    getUser()
+  }, [id])
+
+  const updateDetailBtn = () => {
+    history.push(`/login?redirect=update/${user.user_id}`)
+  }
   const deleteUserBtn = () => {}
 
   return (
@@ -10,19 +28,23 @@ const UserDetailScreen = () => {
       <Row className='justify-content-center'>
         <Card className='mt-5 mb-3 px-4 py-3 card'>
           <Row className='justify-content-center'>
-            <Image
-              src='https://headshotsuniversal.com/wp-content/uploads/2020/03/Michael_Brosnan_Square_actor_headshot-23-scaled.jpg'
-              roundedCircle
-              fluid
-              style={{ width: '40%' }}
-            />
+            <LinkContainer
+              style={{ width: '40%', cursor: 'pointer' }}
+              to={`/image/${user.user_id}`}
+            >
+              <Image
+                src='https://headshotsuniversal.com/wp-content/uploads/2020/03/Michael_Brosnan_Square_actor_headshot-23-scaled.jpg'
+                roundedCircle
+                fluid
+              />
+            </LinkContainer>
           </Row>
           <Row>
             <Col>
               <h3 className='text-center my-3'>Name :</h3>
             </Col>
             <Col>
-              <h3 className='text-center my-3'>Harry Potter</h3>
+              <h3 className='text-center my-3'>{user.user_name}</h3>
             </Col>
           </Row>
           <Row>
@@ -30,15 +52,7 @@ const UserDetailScreen = () => {
               <h3 className='text-center my-3'>Email :</h3>
             </Col>
             <Col>
-              <h3 className='text-center my-3'>harry@gmail.com</h3>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <h3 className='text-center my-3'>Password :</h3>
-            </Col>
-            <Col>
-              <h3 className='text-center my-3'>123456</h3>
+              <h3 className='text-center my-3'>{user.user_email}</h3>
             </Col>
           </Row>
           <Row>
@@ -46,7 +60,7 @@ const UserDetailScreen = () => {
               <h3 className='text-center my-3'>Total Orders :</h3>
             </Col>
             <Col>
-              <h3 className='text-center my-3'>23</h3>
+              <h3 className='text-center my-3'>{user.total_orders}</h3>
             </Col>
           </Row>
           <Row>
@@ -54,7 +68,7 @@ const UserDetailScreen = () => {
               <h3 className='text-center my-3'>Last Logged In :</h3>
             </Col>
             <Col>
-              <h3 className='text-center my-3'>14 hours ago</h3>
+              <h3 className='text-center my-3'>{user.last_logged_in}</h3>
             </Col>
           </Row>
           <Row>
@@ -62,7 +76,7 @@ const UserDetailScreen = () => {
               <h3 className='text-center my-3'>Created At :</h3>
             </Col>
             <Col>
-              <h3 className='text-center my-3'>10 September 2021</h3>
+              <h3 className='text-center my-3'>{user.createdAt}</h3>
             </Col>
           </Row>
           <Row className='justify-content-center'>

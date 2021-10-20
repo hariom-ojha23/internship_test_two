@@ -13,7 +13,7 @@ const App = () => {
       <Route path='/login' component={LoginScreen} />
       <Route path='/register' component={RegisterScreen} />
       <Route exact path='/' component={AllUserDetailScreen} />
-      <Route path='/update' component={UpdateDetailScreen} />
+      <Route path='/update/:id' component={UpdateDetailScreen} />
       <Route path='/details/:id' component={UserDetailScreen} />
       <Route path='/image/:id' component={ImageScreen} />
     </Router>
