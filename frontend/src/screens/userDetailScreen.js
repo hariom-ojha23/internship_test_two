@@ -1,7 +1,7 @@
 import React from 'react'
 import { Card, Container, Row, Col, Image, Button } from 'react-bootstrap'
 
-const userDetailScreen = () => {
+const UserDetailScreen = () => {
   const updateDetailBtn = () => {}
   const deleteUserBtn = () => {}
 
@@ -90,4 +90,4 @@ const userDetailScreen = () => {
   )
 }
 
-export default userDetailScreen
+export default UserDetailScreen
